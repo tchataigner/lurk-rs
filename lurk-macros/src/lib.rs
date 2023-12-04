@@ -20,6 +20,12 @@ use syn::{
     MetaList, NestedMeta, Path, Type,
 };
 
+/// The `Coproc` macro adds dispatching `Coprocessor` and `Cocircuit` implementations to enums whose
+/// variants all atomically enclose types implementing `Coprocessor`.
+///
+/// # Panics
+///
+/// `Coproc` panics if the input is not an enum.
 #[proc_macro_derive(Coproc)]
 pub fn derive_enum_coproc(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
@@ -323,6 +329,10 @@ pub fn lurk(tokens: TokenStream) -> TokenStream {
 /// enclose them in quotation marks. To test different combinations of type parameters, `types`
 /// can be used multiple times.
 ///
+/// # Panics
+///
+/// `serde_test` fails if the input is not a struct or an enum.
+///
 /// # Example
 /// ```
 /// use proptest_derive::Arbitrary;
@@ -484,6 +494,10 @@ fn get_type_from_attrs(attrs: &[syn::Attribute], attr_name: &str) -> syn::Result
 }
 
 /// This macro derives an impl of TryFrom<foo> for an enum type T with `#[repr(foo)]`.
+///
+/// # Panics
+///
+/// `#[derive(TryFromRepr)]` will panic if it is applied to a type that is not an enum.
 ///
 /// # Example
 /// ```
