@@ -49,7 +49,9 @@ impl MetricsSink {
     /// This *must* be invoked before any metrics are generated. If metrics are generated before a
     /// global sink is installed, the thread generating the metrics will panic.
     ///
-    /// Panics if a sink has already been installed.
+    /// # Panics
+    ///
+    /// As a sink can only be installed once, will panic if we try to install it again.
     pub fn init() -> MetricsSinkHandle {
         let sink = Self::new();
 
