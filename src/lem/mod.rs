@@ -331,6 +331,11 @@ impl Func {
     }
 
     /// Performs the static checks described in LEM's docstring.
+    ///
+    /// # Panics
+    ///
+    /// `check` panics if a [`Var`] in a block is never used and was set with an empty [`AString`].
+    /// This is an invariant violation, it should not happen.
     pub fn check(&self) -> Result<()> {
         use std::collections::{HashMap, HashSet};
 
@@ -526,7 +531,7 @@ impl Func {
         self.input_params.iter().for_each(|var| is_unique(var, map));
         recurse(&self.body, self.output_size, map)?;
         for (var, u) in map.iter() {
-            let ch = var.0.chars().next().unwrap();
+            let ch = var.0.chars().next().expect("var.0 is unexpectedly empty.");
             if !u && ch != '_' {
                 bail!("Variable {var} not used. If intended, please prefix it with \"_\"")
             }

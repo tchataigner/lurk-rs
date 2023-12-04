@@ -162,6 +162,10 @@ where
 
     /// If this [Instance] is of [Kind::SuperNovaAuxParams], then generate the `num_circuits + 1`
     /// circuit param instances that are determined by the internal [Lang].
+    ///
+    /// # Panics
+    ///
+    /// `circuit_param_instances` panics if the referred [`Instance`] is not [`Kind::SuperNovaAuxParams`].
     pub fn circuit_param_instances(&self) -> Vec<Self> {
         assert!(
             matches!(self.kind, Kind::SuperNovaAuxParams),
@@ -180,6 +184,12 @@ where
             .collect::<Vec<_>>()
     }
 
+    /// `reindex` creates a new [`Instance`] for a circuit parameter at a given index.
+    ///
+    /// # Panics
+    ///
+    /// `reindex` panics if its referred [`Instance`] is not [`Kind::SuperNovaAuxParams`] or
+    /// [`Kind::SuperNovaCircuitParams`].
     pub fn reindex(&self, circuit_index: usize) -> Self {
         match self.kind {
             Kind::SuperNovaAuxParams | Kind::SuperNovaCircuitParams(_) => Instance::new(
@@ -188,7 +198,7 @@ where
                 self.abomonated,
                 Kind::SuperNovaCircuitParams(circuit_index),
             ),
-            _ => panic!(),
+            _ => panic!("Expected either supernova aux or circuits parameters"),
         }
     }
 }

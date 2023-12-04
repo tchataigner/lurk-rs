@@ -99,6 +99,10 @@ impl Func {
 
     /// Asserts that all paths were visited by a set of frames. This is mostly
     /// for testing purposes.
+    ///
+    /// # Panics
+    ///
+    /// Panics if not all paths were visited by a set of frames.
     pub fn assert_all_paths_taken(&self, paths: &[Path]) {
         assert_eq!(Path::num_paths_taken(paths), self.num_paths());
     }

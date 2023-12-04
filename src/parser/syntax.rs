@@ -287,14 +287,19 @@ pub fn parse_hash_char<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F
     }
 }
 
+/// `parse_char` returns a closure that will try to parse a [`Syntax::Char`] from a given [`Span`].
 pub fn parse_char<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syntax<F>> {
     move |from: Span<'_>| {
         let (i, _) = tag("'")(from)?;
         let (i, s) = string::parse_string_inner1('\'', true, "()'")(i)?;
         let (upto, _) = tag("'")(i)?;
         let mut chars: Vec<char> = s.chars().collect();
-        if chars.len() == 1 {
-            let c = chars.pop().unwrap();
+
+        if chars.len() != 1 {
+            return ParseError::throw(from, ParseErrorKind::InvalidChar(s))
+        }
+
+        if let Some(c) = chars.pop() {
             let pos = Pos::from_upto(from, upto);
             Ok((upto, Syntax::Char(pos, c)))
         } else {
@@ -303,6 +308,13 @@ pub fn parse_char<F: LurkField>() -> impl Fn(Span<'_>) -> ParseResult<'_, F, Syn
     }
 }
 
+/// `parse_list` returns a closure that will try to parse a [`Syntax::List`] from a given [`Span`].
+/// `meta` argument can be toggled if we are dealing with the meta package. `create_unknown_packages`
+/// allows for more leeway when testing.
+///
+/// # Panics
+///
+/// `parse_list` panics if `meta` was set to `true` but the meta package is unavailable.
 pub fn parse_list<F: LurkField>(
     state: Rc<RefCell<State>>,
     meta: bool,

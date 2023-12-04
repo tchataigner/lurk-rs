@@ -142,7 +142,11 @@ impl State {
         self.intern_fold(self.current_package.clone(), path, create_unknown_packges)
     }
 
-    /// Initiates the Lurk state with the appropriate structure of packages
+    /// Initiates the Lurk state with the appropriate structure of packages.
+    ///
+    /// # Panics
+    ///
+    /// `init_lurk_state` panics if the importation of the local symbols in the package fails.
     pub fn init_lurk_state() -> Self {
         let mut root_package = Package::new(SymbolRef::new(Symbol::root_sym()));
 
@@ -165,7 +169,7 @@ impl State {
         let mut user_package = Package::new(lurk_package.intern(USER_PACKAGE_SYMBOL_NAME));
         user_package
             .use_package(&lurk_package)
-            .expect("all symbols in the lurk package are importable");
+            .expect("all symbols in the lurk package should be importable");
 
         // initiate the state with the lurk user package then add the others
         let mut state = Self::new_with_package(user_package);

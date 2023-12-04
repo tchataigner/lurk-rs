@@ -342,6 +342,13 @@ impl<F: LurkField> Store<F> {
         }
     }
 
+    /// `fetch_string` returns a string from a given pointer. It will first try to fetch it from the
+    /// cache, then directly fetch it from the [`LurkField`] list if not found.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the char pointer was originally malformed. This can happen if we interned
+    /// a malformed [`LurkField`], corrupting `Store::f_elts`.
     pub fn fetch_string(&self, ptr: &Ptr) -> Option<String> {
         if let Some(str) = self.ptr_string_cache.get(ptr) {
             Some(str.to_string())
@@ -668,6 +675,10 @@ impl<F: LurkField> Store<F> {
         }
     }
 
+    /// # Panics
+    ///
+    /// Panics if the parsed syntax does not have a position in the source code. This is an invariant
+    /// error and should never happen.
     pub fn read_maybe_meta<'a>(
         &self,
         state: Rc<RefCell<State>>,
@@ -693,21 +704,41 @@ impl<F: LurkField> Store<F> {
         self.read(State::init_lurk_state().rccell(), input)
     }
 
+    /// `expect_f` returns a [`LurkField`] from a given index.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the given index is missing from our `f_elts` set.
     #[inline]
     pub fn expect_f(&self, idx: usize) -> &F {
         self.fetch_f(idx).expect("Index missing from f_elts")
     }
 
+    /// `expect_2_ptrs` returns 2 pointers from our [`Store`] at a given index.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the given index is missing from our `tuple2` set.
     #[inline]
     pub fn expect_2_ptrs(&self, idx: usize) -> &(Ptr, Ptr) {
         self.fetch_2_ptrs(idx).expect("Index missing from tuple2")
     }
 
+    /// `expect_3_ptrs` returns 3 pointers from our [`Store`] at a given index.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the given index is missing from our `tuple3` set.
     #[inline]
     pub fn expect_3_ptrs(&self, idx: usize) -> &(Ptr, Ptr, Ptr) {
         self.fetch_3_ptrs(idx).expect("Index missing from tuple3")
     }
 
+    /// `expect_4_ptrs` returns 4 pointers from our [`Store`] at a given index.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the given index is missing from our `tuple4` set.
     #[inline]
     pub fn expect_4_ptrs(&self, idx: usize) -> &(Ptr, Ptr, Ptr, Ptr) {
         self.fetch_4_ptrs(idx).expect("Index missing from tuple4")

@@ -41,6 +41,11 @@ where
 /// this leads to extremely high performance, but restricts the lifetime of the data
 /// to the lifetime of the file. Thus, we cannot pass a reference out and must
 /// rely on a closure to capture the data and continue the computation in `bind`.
+///
+/// # Panics
+///
+/// A panic may occur when creating a new instance of [`DiskCache`]. If the folder set for the public
+/// parameters of Lurk does not already exist and can not be created otherwise.
 pub fn with_public_params<'a, F, C, M, Fn, T>(
     instance: &Instance<'a, F, C, M>,
     bind: Fn,
@@ -79,6 +84,13 @@ where
     }
 }
 
+/// `supernova_circuit_params` returns the circuit parameters for an instance of a Nova or SuperNova proving
+/// system.
+///
+/// # Panics
+///
+/// A panic may occur when creating a new instance of [`DiskCache`]. If the folder set for the public
+/// parameters of Lurk does not already exist and can not be created otherwise.
 pub fn supernova_circuit_params<
     'a,
     F: CurveCycleEquipped,
@@ -105,6 +117,13 @@ where
     })
 }
 
+/// `supernova_aux_params` returns the aux parameters for an instance of a Nova or SuperNova  proving
+/// system.
+///
+/// # Panics
+///
+/// A panic may occur when creating a new instance of [`DiskCache`]. If the folder set for the public
+/// parameters of Lurk does not already exist and can not be created otherwise.
 pub fn supernova_aux_params<
     'a,
     F: CurveCycleEquipped,
@@ -136,6 +155,15 @@ where
 use ::nova::supernova::NonUniformCircuit;
 use ::nova::traits::circuit_supernova::StepCircuit as SuperStepCircuit;
 use supernova::C2;
+
+
+/// `supernova_public_params` attempts to extract the abomonated public parameters for an instance of
+/// a Nova or SuperNova  proving system.
+///
+/// # Panics
+///
+/// A panic may occur when creating a new instance of [`DiskCache`]. If the folder set for the public
+/// parameters of Lurk does not already exist and can not be created otherwise.
 pub fn supernova_public_params<
     'a,
     F: CurveCycleEquipped,

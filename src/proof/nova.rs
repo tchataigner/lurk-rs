@@ -191,6 +191,10 @@ pub fn circuit_cache_key<
 }
 
 /// Generates the public parameters for the Nova proving system.
+///
+/// # Panics
+///
+/// `public_params` panics if the setup for [`CompressedSNARK`] fails for the given public parameters.
 pub fn public_params<
     'a,
     F: CurveCycleEquipped,
