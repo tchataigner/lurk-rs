@@ -157,12 +157,21 @@ Then run `lurk coprocessor --name {name} <{}_FOLDER>` to instantiate a new gadge
             Ok(coprocessor)
         }
 
-        /// Creates a [CircomCoprocessor] and panics if it fails
+        /// Creates a [CircomCoprocessor] and panics if it fails.
+        ///
+        /// # Panics
+        ///
+        /// Instantiating a new `CircomCoprocessor` will panic if either:
+        /// - The designated circom gadget does not exist on the file system.
+        /// - There is an error while instantiating the `CircomConfig`
+        ///
+        /// _Note: In the current state of the [`CircomConfig::new()`] implementation it never returns
+        /// an error but panics instead_
         pub fn new(gadget: C) -> Self {
             CircomCoprocessor::create(gadget).unwrap()
         }
 
-        /// The defined name of this coprocessor, which is just the inner gadget's name
+        /// The defined name of this coprocessor, which is just the inner gadget's name.
         pub fn name(&self) -> &str {
             self.gadget.name()
         }

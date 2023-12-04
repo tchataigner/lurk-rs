@@ -1309,6 +1309,14 @@ impl Func {
 
     /// Create R1CS constraints for a LEM function given an evaluation frame. This
     /// function implements the STEP 3 mentioned above.
+    ///
+    /// # Panics
+    ///
+    /// `synthesize_frame` panics depending of the pair formed by the [`ConstraintSystem`] instance and
+    /// the value of the `Option<&[Arc<SlotWitness<F>>]>`.
+    ///
+    /// If a [`SlotWitness`] is passed, we expect the the [`ConstraintSystem`] instance to be a witness
+    /// generator, and the opposite otherwise.
     pub fn synthesize_frame<F: LurkField, CS: ConstraintSystem<F>, C: Coprocessor<F>>(
         &self,
         cs: &mut CS,

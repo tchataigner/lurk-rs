@@ -77,6 +77,9 @@ impl<F: LurkField> AllocatedPtr<F> {
         })
     }
 
+    /// # Panics
+    ///
+    /// `alloc_infallible` panics if there is a circuit synthesis context error when allocating.
     pub fn alloc_infallible<Fo, CS: ConstraintSystem<F>, T: Tag>(cs: &mut CS, value: Fo) -> Self
     where
         Fo: FnOnce() -> ZPtr<T, F>,

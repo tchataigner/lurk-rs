@@ -1257,6 +1257,14 @@ impl<F: LurkField> Store<F> {
         }
     }
 
+    /// `to_z_store_with_ptr` creates a [`ZStore`] and a [`ZExpr`] at a given [`ZExprPtr`] based on
+    /// a referred [`Store`] and an [`Expression`] at a given [`Ptr`].
+    ///
+    /// # Panics
+    ///
+    /// With our current implementation, a panic is not supposed to happen in `to_z_store_with_ptr`.
+    /// However, it could happen in the future if [`get_z_expr`] sets the passed `Option<ZStore>` to
+    /// `None`.
     pub fn to_z_store_with_ptr(&self, ptr: &Ptr<F>) -> Result<(ZStore<F>, ZExprPtr<F>), Error> {
         let z_store = ZStore::new();
         let mut store_opt = Some(z_store);
@@ -1675,9 +1683,15 @@ impl<F: LurkField> Expression<F> {
 pub struct ConstantPtrs<F: LurkField>(Option<ZExprPtr<F>>, Ptr<F>);
 
 impl<F: LurkField> ConstantPtrs<F> {
+    /// `value` returns the value of our constant pointer.
     pub fn value(&self) -> F {
         *self.z_ptr().value()
     }
+    /// `z_ptr` returns the expression pointer for the value, panics if it is not set.
+    ///
+    /// # Panics
+    ///
+    /// `z_ptr` can panic if the cache has not properly been filled for Scalars.
     pub fn z_ptr(&self) -> ZExprPtr<F> {
         self.0
             .expect("ZExprPtr missing; hydrate_scalar_cache should have been called.")

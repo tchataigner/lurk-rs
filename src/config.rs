@@ -105,6 +105,12 @@ pub fn public_params_default_dir() -> Utf8PathBuf {
 
 // TODO: Should we crash if the user has no home dir?
 /// Returns the home directory used by `cargo`` and `rustup`
+///
+/// # Panics
+///
+/// `home_dir` panics if either:
+/// - The user has no home directory.
+/// - The given path contains an invalid Unicode.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn home_dir() -> Utf8PathBuf {
     Utf8PathBuf::from_path_buf(home::home_dir().expect("missing home directory"))

@@ -137,6 +137,13 @@ impl Symbol {
         }
     }
 
+    /// `as_child` takes a given symbol, trims it from the referred symbol and return the leftover
+    /// symbol.
+    ///
+    /// # Panics
+    ///
+    /// `as_child` could panic if used over multiple threads and the child value looked for is consumed
+    /// between our `peek()` and `next().unwrap()`.
     pub fn as_child(&self, parent: &Symbol) -> Option<Symbol> {
         // parent paths can't be longer than child paths
         if self.path.len() < parent.path.len() {

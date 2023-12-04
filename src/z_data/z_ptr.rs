@@ -112,6 +112,12 @@ impl<E: Tag, F: LurkField> ZPtr<E, F> {
     }
 
     /// Converts a base32-encoded string to a ZPtr
+    ///
+    /// # Panics
+    ///
+    /// `from_base32` will panic if:
+    /// - The input string length is shorter than 5 bytes.
+    /// - The Base32 decoded bytes value for the tag is shorter than 2.
     pub fn from_base32(zptr: &str) -> Result<Self, anyhow::Error> {
         let tag_bytes = Base32Unpadded::decode_vec(&zptr[0..4])
             .map_err(|e| anyhow!(format!("Failed to decode base32: {}", e)))?;
