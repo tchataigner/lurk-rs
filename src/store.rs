@@ -145,6 +145,12 @@ macro_rules! lurk_sym_ptr {
 /// Prefer these methods when constructing literal data or assembling program fragments in
 /// tests or during evaluation, etc.
 impl<F: LurkField> Store<F> {
+    /// `expect_constants` will validate that Constants were set during instantiation. If that is the
+    /// case, it will return them.
+    ///
+    /// # Panics
+    ///
+    /// `expect_constants` panics if the Constants were not set during instantiation.
     pub fn expect_constants(&self) -> &NamedConstants<F> {
         self.constants
             .get()
@@ -185,6 +191,11 @@ impl<F: LurkField> Store<F> {
         self.hide(F::NON_HIDING_COMMITMENT_SECRET, payload)
     }
 
+    /// `open` will return a potentially-opaque value and its pointer.
+    ///
+    /// # Panics
+    ///
+    /// `open` panics if thr commitment we are looking for was not previously set in the store.
     pub fn open(&self, ptr: Ptr<F>) -> Option<(F, Ptr<F>)> {
         let p = match ptr.tag {
             ExprTag::Comm => ptr,
@@ -204,6 +215,12 @@ impl<F: LurkField> Store<F> {
             .map(|(secret, payload)| (secret.0, *payload))
     }
 
+    /// `open_mut` will return a potentially-opaque value and its pointer.
+    ///
+    /// # Panics
+    ///
+    /// `open_mut` panics if we are expecting a `Num` but it was not previously set at the given
+    /// pointer.
     pub fn open_mut(&self, ptr: Ptr<F>) -> Result<(F, Ptr<F>), Error> {
         let p = match ptr.tag {
             ExprTag::Comm => ptr,
@@ -309,6 +326,11 @@ impl<F: LurkField> Store<F> {
         ptr
     }
 
+    /// `intern_strcons` interns a `strcons`, described by a tuple of a character and a string.
+    ///
+    /// # Panics
+    ///
+    /// `intern_strcons` panics if the describing tuple is not a tuple of a character and a string.
     pub fn intern_strcons(&self, car: Ptr<F>, cdr: Ptr<F>) -> Ptr<F> {
         if car.is_opaque() || cdr.is_opaque() {
             self.hash_expr(&car);
@@ -319,6 +341,11 @@ impl<F: LurkField> Store<F> {
         Ptr::index(ExprTag::Str, i)
     }
 
+    /// `intern_symcons` interns a `symcons`, described by a tuple of a string and a symbol.
+    ///
+    /// # Panics
+    ///
+    /// `intern_symcons` panics if the describing tuple is not a tuple of a string and a symbol.
     pub fn intern_symcons(&self, car: Ptr<F>, cdr: Ptr<F>) -> Ptr<F> {
         if car.is_opaque() || cdr.is_opaque() {
             self.hash_expr(&car);
@@ -329,6 +356,11 @@ impl<F: LurkField> Store<F> {
         Ptr::index(ExprTag::Sym, i)
     }
 
+    /// `intern_keycons` interns a `keycons`, described by a tuple of a string and a symbol.
+    ///
+    /// # Panics
+    ///
+    /// `intern_keycons` panics if the describing tuple is not a tuple of a string and a symbol.
     pub fn intern_keycons(&self, car: Ptr<F>, cdr: Ptr<F>) -> Ptr<F> {
         if car.is_opaque() || cdr.is_opaque() {
             self.hash_expr(&car);
@@ -536,6 +568,11 @@ impl<F: LurkField> Store<F> {
         }
     }
 
+    /// `intern_fun` interns a function.
+    ///
+    /// # Panics
+    ///
+    /// `intern_fun` panics if the function arg is not a symbol.
     pub fn intern_fun(&self, arg: Ptr<F>, body: Ptr<F>, closed_env: Ptr<F>) -> Ptr<F> {
         // TODO: closed_env must be an env
         assert!(matches!(arg.tag, ExprTag::Sym), "ARG must be a symbol");
@@ -911,6 +948,14 @@ impl<F: LurkField> Store<F> {
         }
     }
 
+    /// `get_z_exp` will cycle through an [`Expression`] at a given [`Ptr`] to generate an equivalent
+    /// [`ZExpr`] at a given [`ZExprPtr`].
+    ///
+    /// # Panics
+    ///
+    /// As we use a mutable reference to deal with our [`ZStore`], we could have a panic case if we
+    /// call `get_z_exp` in a multi-threaded program (e.g.: `get_z_exp` is called but the referred
+    /// [`ZStore`] is set to `None` in another thread).
     // TODO: add cycle detection to avoid infinite recursion
     pub fn get_z_expr(
         &self,
