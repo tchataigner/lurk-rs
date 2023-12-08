@@ -8,9 +8,9 @@ description = "Metrics Sink for lurk"
 repository = "https://github.com/lurk-lab/lurk-rs"
 
 [dependencies]
+hdrhistogram = { version = "7.5.2", default-features = false }
 metrics = { workspace = true }
 once_cell = { workspace = true }
-hdrhistogram = { version = "7.5.2", default-features = false }
 tracing = { workspace = true }
 
 [dev-dependencies]
