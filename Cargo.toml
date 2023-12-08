@@ -10,7 +10,7 @@ rust-version = "1.71.1"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# Lurk dependencies
+# Local dependencies
 lurk-macros = { path = "lurk-macros" }
 lurk-metrics = { path = "lurk-metrics" }
 
