@@ -11,6 +11,7 @@ use crate::{
 pub mod circom;
 pub mod gadgets;
 pub mod sha256;
+pub mod sha3;
 pub mod trie;
 
 /// `Coprocessor` is a trait that represents a generalized interface for coprocessors.
@@ -57,9 +58,7 @@ pub trait Coprocessor<F: LurkField>: Clone + Debug + Sync + Send + CoCircuit<F> 
 ///
 /// The trait is implemented by concrete coprocessor types, such as `DumbCoprocessor`.
 pub trait CoCircuit<F: LurkField>: Send + Sync + Clone {
-    fn arity(&self) -> usize {
-        todo!()
-    }
+    fn arity(&self) -> usize;
 
     /// Function for internal plumbing. Reimplementing is not recommended
     fn synthesize_internal<CS: ConstraintSystem<F>>(
@@ -101,9 +100,7 @@ pub trait CoCircuit<F: LurkField>: Send + Sync + Clone {
         _s: &Store<F>,
         _not_dummy: &Boolean,
         _args: &[AllocatedPtr<F>],
-    ) -> Result<AllocatedPtr<F>, SynthesisError> {
-        unimplemented!()
-    }
+    ) -> Result<AllocatedPtr<F>, SynthesisError>;
 }
 
 #[cfg(test)]
@@ -196,6 +193,18 @@ pub(crate) mod test {
 
             Ok(vec![expr, env, cont])
         }
+
+        fn synthesize_simple<CS: ConstraintSystem<F>>(
+            &self,
+            _cs: &mut CS,
+            _g: &GlobalAllocator<F>,
+            _s: &Store<F>,
+            _not_dummy: &Boolean,
+            _args: &[AllocatedPtr<F>],
+        ) -> Result<AllocatedPtr<F>, SynthesisError> {
+            // Unreachable as `synthesize_simple` is only called in default `synthesize` implementation.
+            unreachable!()
+        }
     }
 
     impl<F: LurkField> Coprocessor<F> for DumbCoprocessor<F> {
@@ -257,6 +266,18 @@ pub(crate) mod test {
             let nil = g.get_allocated_ptr_from_ptr(&s.intern_nil(), s)?;
             let term = g.get_allocated_ptr_from_ptr(&s.cont_terminal(), s)?;
             Ok(vec![nil, env.clone(), term])
+        }
+
+        fn synthesize_simple<CS: ConstraintSystem<F>>(
+            &self,
+            _cs: &mut CS,
+            _g: &GlobalAllocator<F>,
+            _s: &Store<F>,
+            _not_dummy: &Boolean,
+            _args: &[AllocatedPtr<F>],
+        ) -> Result<AllocatedPtr<F>, SynthesisError> {
+            // Unreachable as `synthesize_simple` is only called in default `synthesize` implementation.
+            unreachable!()
         }
     }
 

@@ -1,8 +1,12 @@
+use bellpepper_core::boolean::Boolean;
+use bellpepper_core::{ConstraintSystem, SynthesisError};
 use indexmap::IndexMap;
 use lurk_macros::Coproc;
 use serde::{Deserialize, Serialize};
 use std::{fmt::Debug, marker::PhantomData};
 
+use crate::circuit::gadgets::pointer::AllocatedPtr;
+use crate::lem::circuit::GlobalAllocator;
 use crate::{
     self as lurk,
     coprocessor::{CoCircuit, Coprocessor},
@@ -36,7 +40,24 @@ impl<F: LurkField> Coprocessor<F> for DummyCoprocessor<F> {
     }
 }
 
-impl<F: LurkField> CoCircuit<F> for DummyCoprocessor<F> {}
+impl<F: LurkField> CoCircuit<F> for DummyCoprocessor<F> {
+    fn arity(&self) -> usize {
+        // This was implemented as such in the previous default implementation.
+        todo!()
+    }
+
+    fn synthesize_simple<CS: ConstraintSystem<F>>(
+        &self,
+        _cs: &mut CS,
+        _g: &GlobalAllocator<F>,
+        _s: &Store<F>,
+        _not_dummy: &Boolean,
+        _args: &[AllocatedPtr<F>],
+    ) -> Result<AllocatedPtr<F>, SynthesisError> {
+        // This was implemented as such in the previous default implementation.
+        unreachable!()
+    }
+}
 
 impl<F: LurkField> DummyCoprocessor<F> {
     #[allow(dead_code)]
